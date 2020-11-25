@@ -3,6 +3,8 @@ import axios from 'axios';
 import TableHeader from './Header';
 import Pagination from './Pagination';
 import Search from './Search';
+import { Container, Row, Col, Jumbotron } from "react-bootstrap";
+import { InputLabel, Select, MenuItem } from "@material-ui/core";
 
 const DataTable = () => {
     const [comments, setComments] = useState([]);
@@ -11,19 +13,18 @@ const DataTable = () => {
     const [search, setSearch] = useState("");
     const [sorting, setSorting] = useState({ field: "", order: "" });
 
-    const ITEMS_PER_PAGE = 50;
+    const ITEMS_PER_PAGE = 10;
 
     const headers = [
-        { name: "No#", field: "id", sortable: false },
-        { name: "Name", field: "name", sortable: true },
-        { name: "Email", field: "email", sortable: true },
-        { name: "Comment", field: "body", sortable: false }
+        { name: "Name", field: "skill", sortable: true },
+        { name: "Title", field: "title", sortable: true },
+        { name: "Author", field: "author", sortable: true }
     ];
 
     useEffect(() => {
         const getData = () => {
 
-            axios.get("https://jsonplaceholder.typicode.com/comments")
+            axios.get("http://localhost:2511/trainingData")
                 .then(response => response.data)
                 .then(data => {
                     setComments(data);
@@ -33,15 +34,18 @@ const DataTable = () => {
 
         getData();
     }, []);
-
+    const handleChange = (event) => {
+        setSearch(event.target.value);
+      };
     const commentsData = useMemo(() => {
         let computedComments = comments;
 
         if (search) {
             computedComments = computedComments.filter(
                 comment =>
-                    comment.name.toLowerCase().includes(search.toLowerCase()) ||
-                    comment.email.toLowerCase().includes(search.toLowerCase())
+                    comment.skill.toLowerCase().includes(search.toLowerCase()) ||
+                    comment.title.toLowerCase().includes(search.toLowerCase()) ||
+                    comment.author.toLowerCase().includes(search.toLowerCase())
             );
         }
 
@@ -69,14 +73,7 @@ const DataTable = () => {
             <div className="row w-100">
                 <div className="col mb-3 col-12 text-center">
                     <div className="row">
-                        <div className="col-md-6">
-                            <Pagination
-                                total={totalItems}
-                                itemsPerPage={ITEMS_PER_PAGE}
-                                currentPage={currentPage}
-                                onPageChange={page => setCurrentPage(page)}
-                            />
-                        </div>
+                        
                         <div className="col-md-6 d-flex flex-row-reverse">
                             <Search
                                 onSearch={value => {
@@ -86,28 +83,59 @@ const DataTable = () => {
                             />
                         </div>
                     </div>
-
-                    <table className="table table-striped">
-                        <TableHeader
-                            headers={headers}
-                            onSorting={(field, order) =>
-                                setSorting({ field, order })
-                            }
-                        />
-                        <tbody>
-                            {commentsData.map(comment => (
-                                <tr>
-                                    <th scope="row" key={comment.id}>
-                                        {comment.id}
-                                    </th>
-                                    <td>{comment.name}</td>
-                                    <td>{comment.email}</td>
-                                    <td>{comment.body}</td>
-                                </tr>
-                            ))}
-                            </tbody>
-                    </table>
-
+                    <Row>
+                        <Col>
+                            {/*<label className="form-check-label" for="Python">Python</label>
+                            <input
+                                type="text"
+                                id="Python"
+                                className="form-check-input"
+                                name="python"
+                                //style={{ width: "240px" }}
+                                placeholder="Search"
+                                value={search}
+                                onChange={e => onInputChange(e.target.value)}
+                            />*/}
+                            <InputLabel id="demo-simple-select-filled-label">SKILLS</InputLabel>
+                            <Select
+                            labelId="demo-simple-select-filled-label"
+                            id="demo-simple-select-filled"
+                            value={search}
+                            onChange={handleChange}
+                            >
+                                <MenuItem value="">
+                                    <em>None</em>
+                                </MenuItem>
+                                <MenuItem value={"python"}>Python</MenuItem>
+                                <MenuItem value={"java"}>Javaa</MenuItem>
+                                <MenuItem value={"react"}>React</MenuItem>
+                            </Select>
+                        </Col>
+                        <Col>
+                            <Jumbotron>
+                                <TableHeader headers={headers} onSorting={(field,order)=>setSorting({field,order})}/>
+                                {
+                                    commentsData.map(comment => (<Container className="border border-dark rounded-lg">
+                                        <Row>
+                                            <Col>{comment.title}</Col>
+                                            <Col>{comment.author}</Col>
+                                            <Col>{comment.skill}</Col>
+                                        </Row>
+                                    </Container>))
+                                }
+                            </Jumbotron>
+                            <div className="row">
+                                <div className="col-md-6 d-flex flex-row-reverse">
+                                    <Pagination
+                                        total={totalItems}
+                                        itemsPerPage={ITEMS_PER_PAGE}
+                                        currentPage={currentPage}
+                                        onPageChange={page => setCurrentPage(page)}
+                                    />
+                                </div>
+                            </div>
+                        </Col>
+                    </Row>
                 </div>
             </div>
         </>

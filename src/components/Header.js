@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Col, Container, Row } from "react-bootstrap";
 
 const Header = ({ headers, onSorting }) => {
     const [sortingField, setSortingField] = useState("");
@@ -15,10 +16,10 @@ const Header = ({ headers, onSorting }) => {
     };
 
     return (
-        <thead>
-            <tr>
+        <Container>
+            <Row>
                 {headers.map(({ name, field, sortable }) => (
-                    <th
+                    <Col
                         key={name}
                         onClick={() =>
                             sortable ? onSortingChange(field) : null
@@ -35,10 +36,10 @@ const Header = ({ headers, onSorting }) => {
                                 }
                             />
                         )}
-                    </th>
+                    </Col>
                 ))}
-            </tr>
-        </thead>
+            </Row>
+        </Container>
     );
 };
 
